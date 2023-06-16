@@ -1,0 +1,29 @@
+#!/bin/bash
+
+# Shutdown all Docker containers
+if [ "$(docker ps -q | wc -l)" -gt 0 ]; then
+    docker stop $(docker ps -q)
+    while [ "$(docker ps -q | wc -l)" -gt 0 ]; do
+        sleep 10
+    done
+fi
+
+# Shutdown all running VMs
+for VM in $(virsh list | awk 'NR>2 {print $2}' | grep -v "^$")
+do
+    virsh shutdown "$VM"
+    while [ "$(virsh domstate "$VM")" != 'shut off' ]; do
+        sleep 10
+    done
+done
+
+# Stop the array
+/usr/local/sbin/emhttp -q -S
+
+# Give Unraid some time to stop the array
+while [ "$(cat /proc/mdstat | grep 'active raid' | wc -l)" -gt 0 ]; do
+    sleep 10
+done
+
+# Reboot Unraid
+/sbin/reboot

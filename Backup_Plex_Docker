@@ -1,0 +1,43 @@
+#!/bin/bash
+
+# Set variables
+PLEX_CONTAINER="Plex-Media-Server"
+PLEX_LIBRARY_DIR="/mnt/cache/appdata/Plex-Media-Server/Library"
+BACKUP_DIR="/mnt/user/Systems/unraid/Plex_Backup"
+NUM_BACKUPS_TO_KEEP=2
+
+# Stop the Plex container
+if docker stop -t 30 $PLEX_CONTAINER; then
+    sleep 30
+else
+    /usr/local/emhttp/webGui/scripts/notify -i warning -s "Plex backup failed. Failed to stop container."
+    exit 1
+fi
+
+# Check if the container is still running
+if [[ "$(docker inspect -f '{{.State.Running}}' $PLEX_CONTAINER)" == "true" ]]; then
+    /usr/local/emhttp/webGui/scripts/notify -i warning -s "Plex backup failed. Failed to stop container for backup."
+    exit 1
+fi
+
+# Backup the Plex Library directory
+NOW=$(date +"%m_%d_%Y-%H_%M")
+if tar -czf "$BACKUP_DIR/plex_backup_$NOW.tar.gz" "$PLEX_LIBRARY_DIR/Application Support"; then
+    chmod a+rw "$BACKUP_DIR/plex_backup_$NOW.tar.gz"
+else
+    /usr/local/emhttp/webGui/scripts/notify -i warning -s "Plex backup failed. Could not create backup."
+    exit 1
+fi
+
+# Start the Plex container again
+if ! docker start $PLEX_CONTAINER; then
+    /usr/local/emhttp/webGui/scripts/notify -i warning -s "Plex backup completed, but failed to restart the Plex container."
+    exit 1
+fi
+
+# Remove oldest backups if there are more backups than the specified limit
+BACKUP_FILES=($BACKUP_DIR/plex_backup_*.tar.gz)
+if (( ${#BACKUP_FILES[@]} > NUM_BACKUPS_TO_KEEP )); then
+    OLD_FILES=$(ls -1tr $BACKUP_DIR/plex_backup_*.tar.gz | head -n $(( ${#BACKUP_FILES[@]} - NUM_BACKUPS_TO_KEEP )))
+    rm -f $OLD_FILES
+fi

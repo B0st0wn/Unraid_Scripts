@@ -1,0 +1,32 @@
+#!/bin/bash
+
+scriptstart=$(date +'%s')
+LOGFILE="/boot/logs/Reboot_Download_Pack.txt"
+
+# Define the names of the qBittorrent, Jackett, Radarr, and Sonarr containers
+QB_CONTAINER_NAME="qbittorrent"
+FLARE_CONTAINER_NAME="FlareSolverr"
+PROWLARR_CONTAINER_NAME="Prowlarr"
+RADARR_CONTAINER_NAME="radarr"
+SONARR_CONTAINER_NAME="sonarr"
+
+# Restart qBittorrent container
+docker restart $QB_CONTAINER_NAME && echo "$(date "+%m-%d-%Y %T") : Restarted Qbittorrent" >> $LOGFILE 2>&1
+sleep 45
+
+# Restart FlareSolver container
+docker restart $FLARE_CONTAINER_NAME && echo "$(date "+%m-%d-%Y %T") : Restarted FlareSolverr" >> $LOGFILE 2>&1
+
+# Restart Jackett container
+docker restart $PROWLARR_CONTAINER_NAME && echo "$(date "+%m-%d-%Y %T") : Restarted Prowlarr" >> $LOGFILE 2>&1
+
+# Restart Radarr container
+docker restart $RADARR_CONTAINER_NAME && echo "$(date "+%m-%d-%Y %T") : Restarted Radarr" >> $LOGFILE 2>&1
+
+# Restart Sonarr container
+docker restart $SONARR_CONTAINER_NAME && echo "$(date "+%m-%d-%Y %T") : Restarted Sonarr" >> $LOGFILE 2>&1
+
+# Delete dangling docker images
+docker image prune -f
+echo "$(date "+%m-%d-%Y %T") : Cleaned up dangling docker images" >> $LOGFILE 2>&1
+

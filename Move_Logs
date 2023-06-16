@@ -1,0 +1,18 @@
+#!/bin/bash
+
+# Backup log files to /mnt/user/Systems/unraid/Log_Files
+backup_dir="/mnt/user/Systems/unraid/Log_Files"
+if [ ! -d "$backup_dir" ]; then
+  mkdir -p "$backup_dir"
+fi
+
+# Copy log files to the backup directory
+cp -p "/appdata/Plex-Media-Server/Library/Application Support/Plex Media Server/"*.log "$backup_dir" 2>/dev/null
+cp -p "/appdata/nginx-proxy-manager-official/data/logs/"*.log "$backup_dir" 2>/dev/null
+cp -p "/appdata/qbittorrent/qBittorrent/data/"*.log "$backup_dir" 2>/dev/null
+find "/appdata/radarr/logs/" -name 'radarr.*.txt' -exec cp -p {} "$backup_dir" \; 2>/dev/null
+find "/appdata/sonarr/logs/" -name 'sonarr.*.txt' -exec cp -p {} "$backup_dir" \; 2>/dev/null
+
+# Set folder permissions to default
+chmod 755 "$backup_dir"
+chown root:root "$backup_dir"
