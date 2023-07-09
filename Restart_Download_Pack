@@ -5,7 +5,7 @@ LOGFILE="/boot/logs/Reboot_Download_Pack.txt"
 
 # Define the names of the qBittorrent, Jackett, Radarr, and Sonarr containers
 DELUGE_CONTAINER_NAME="delugevpn"
-FLARE_CONTAINER_NAME="flareSolverr"
+FLARE_CONTAINER_NAME="flaresolverr"
 PROWLARR_CONTAINER_NAME="Prowlarr"
 RADARR_CONTAINER_NAME="radarr"
 SONARR_CONTAINER_NAME="sonarr"
