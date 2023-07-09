@@ -4,14 +4,18 @@ scriptstart=$(date +'%s')
 LOGFILE="/boot/logs/Reboot_Download_Pack.txt"
 
 # Define the names of the qBittorrent, Jackett, Radarr, and Sonarr containers
-QB_CONTAINER_NAME="qbittorrent"
-FLARE_CONTAINER_NAME="FlareSolverr"
+DELUGE_CONTAINER_NAME="delugevpn"
+FLARE_CONTAINER_NAME="flareSolverr"
 PROWLARR_CONTAINER_NAME="Prowlarr"
 RADARR_CONTAINER_NAME="radarr"
 SONARR_CONTAINER_NAME="sonarr"
+READARR_CONTAINER_NAME="Readarr"
+LIDARR_CONTAINER_NAME="lidarr"
+UNPACKERR_CONTAINER_NAME="unpackerr"
+OVERSEERR_CONTAINER_NAME="overseerr"
 
-# Restart qBittorrent container
-docker restart $QB_CONTAINER_NAME && echo "$(date "+%m-%d-%Y %T") : Restarted Qbittorrent" >> $LOGFILE 2>&1
+# Restart Deluge container
+docker restart $DELUGE_CONTAINER_NAME && echo "$(date "+%m-%d-%Y %T") : Restarted Deluge" >> $LOGFILE 2>&1
 sleep 45
 
 # Restart FlareSolver container
@@ -26,7 +30,18 @@ docker restart $RADARR_CONTAINER_NAME && echo "$(date "+%m-%d-%Y %T") : Restarte
 # Restart Sonarr container
 docker restart $SONARR_CONTAINER_NAME && echo "$(date "+%m-%d-%Y %T") : Restarted Sonarr" >> $LOGFILE 2>&1
 
+# Restart Readarr container
+docker restart $READARR_CONTAINER_NAME && echo "$(date "+%m-%d-%Y %T") : Restarted Readarr" >> $LOGFILE 2>&1
+
+# Restart Lidarr container
+docker restart $LIDARR_CONTAINER_NAME && echo "$(date "+%m-%d-%Y %T") : Restarted Lidarr" >> $LOGFILE 2>&1
+
+# Restart Unpacker container
+docker restart $UNPACKERR_CONTAINER_NAME && echo "$(date "+%m-%d-%Y %T") : Restarted Unpacker" >> $LOGFILE 2>&1
+
+# Restart Overseerr container
+docker restart $OVERSEERR_CONTAINER_NAME && echo "$(date "+%m-%d-%Y %T") : Restarted Overseerr" >> $LOGFILE 2>&1
+
 # Delete dangling docker images
 docker image prune -f
 echo "$(date "+%m-%d-%Y %T") : Cleaned up dangling docker images" >> $LOGFILE 2>&1
-
